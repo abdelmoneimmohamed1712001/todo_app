@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/ui/widgets/custom_text_field.dart';
 
@@ -136,7 +137,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SizedBox(height: 12,),
                     ElevatedButton(
                         onPressed: () {
-                          login();
+                          register(emailController.text,passwordController.text);
                         },
                         style: ButtonStyle(
                           elevation: MaterialStatePropertyAll(0),
@@ -150,16 +151,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('Already have an acount ?'),
-                        SizedBox(width: 5,),
+                        Text('Already have an acount ?',style: TextStyle(color: Colors.white)),
+
                         TextButton(
-                          style: TextButton.styleFrom(
-                              padding: EdgeInsets.all(0),
-                              fixedSize: Size.fromWidth(0)
-                          ),
                           onPressed: () {
                             Navigator.pushReplacementNamed(context, AppRoutes.loginRoute);
-                          }, child: Text('Login',style: TextStyle(color: Colors.white),),),
+                          }, child: Text('Login',style: TextStyle(color: Colors.white,decoration: TextDecoration.underline),),),
                       ],)
                   ],)
               ],
@@ -170,10 +167,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void login() {
-    bool isValidForm = formKey.currentState!.validate();
-    if (!isValidForm) {
+  void register(String email,String password)async {
+    if(formKey.currentState?.validate()==false){
       return;
+    }
+    try {
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      print('IDDDDDDDDDD : ${credential.user?.uid}');
+      Navigator.pushReplacementNamed(context, AppRoutes.loginRoute);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }
