@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/core/routes_manager/routes_manager.dart';
+import 'package:todo_app/core/utils/dialog_utils.dart';
 import 'package:todo_app/ui/auth/register/register_screen.dart';
 import 'package:todo_app/ui/widgets/custom_text_field.dart';
 
@@ -15,8 +16,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isSecure = true;
-  var emailController = TextEditingController();
-  var passwordController = TextEditingController();
+  var emailController = TextEditingController(text: 'hossam@gmail.com');
+  var passwordController = TextEditingController(text: '123456');
   var formKey = GlobalKey<FormState>();
 
   @override
@@ -121,15 +122,22 @@ void login(String email , String password) async{
     return;
   }
   try {
+    DialogUtils.showLoadingDialog(context, 'plz , wait...');
     final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password
     );
     print('IDDDDDDDDDD : ${credential.user?.uid}');
-    Navigator.pushReplacementNamed(context, AppRoutes.homeRoute);
+    DialogUtils.hideDialog(context);
+    DialogUtils.showMessageDialog(
+        context,message: 'User logged in Successfully',posActionTitle: 'login',posAction: () {
+      Navigator.pushReplacementNamed(context, AppRoutes.homeRoute);
+        },);
+    //
   } on FirebaseAuthException catch (e) {
-    if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-      print('Wrong email or password');
+    DialogUtils.hideDialog(context);
+    if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
+      DialogUtils.showMessageDialog(context,message: 'Wrong email or password',negActionTitle: 'Try Again',);
     }
   }
 }
