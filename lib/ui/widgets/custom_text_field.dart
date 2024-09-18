@@ -9,6 +9,8 @@ class CustomTextFormField extends StatelessWidget {
   bool isSecureText;
   Widget? suffixIcon;
   TextEditingController? controller;
+  Function(dynamic value)? onChanged;
+  String? initialValue;
 
   CustomTextFormField(
       {required this.hint,
@@ -16,7 +18,10 @@ class CustomTextFormField extends StatelessWidget {
         this.keyboardType,
         this.isSecureText = false,
         this.suffixIcon,
-        this.controller});
+        this.controller,
+        this.onChanged ,
+        this.initialValue,
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +32,21 @@ class CustomTextFormField extends StatelessWidget {
         obscureText: isSecureText,
         keyboardType: keyboardType,
         validator: validator,
+        initialValue: initialValue,
+        onChanged: onChanged,
         decoration: InputDecoration(
           suffixIcon: suffixIcon,
           hintText: hint,
           fillColor: Colors.white,
           filled: true,
+
+
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(22),
-              borderSide: BorderSide(color: Colors.white, width: 2)),
+              borderSide: BorderSide(color: Color(0xff707070), width: 2)),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(22),
-              borderSide: BorderSide(color: Colors.white, width: 2)),
+              borderSide: BorderSide(color: Color(0xff707070), width: 2)),
           errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(22),
               borderSide: BorderSide(color: Colors.red, width: 2)),
